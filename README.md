@@ -3,9 +3,9 @@
 
 <ul>
 <li>Windows 7/8/10 or Linux</li>
-<li>python 3</li>
-<li>numpy</li>
-<li>hashlib</li>
+<li>python 3 (https://www.python.org/)</li>
+<li>numpy (https://pypi.org/project/numpy/)</li>
+<li>hashlib (https://pypi.org/project/hashlib/)</li>
 </ul>
 
 ## Run
