@@ -1,2 +1,1 @@
-# Project_mercury
-Small game project repository
+# Password Strength Tester (Brute-force)
