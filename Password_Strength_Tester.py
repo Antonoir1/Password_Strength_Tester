@@ -1,64 +1,38 @@
-import BruteForce, Hash
+import BruteForce, Dictionnary, Hash, Load
 import sys
 import numpy as np
 
 if __name__ == "__main__":
-    if(len(sys.argv) != 5):
-        print("ERROR: WRONG ARGUMENTS")
-        print("Password_Strength_Tester password min_length max_length time_limit")
-        print("password : STRING\nmin_length: INTEGER\nmax_length : INTEGER\ntime_limit : INTERGER (seconds)")
-    try:
-        if(int(sys.argv[2]) <= int(sys.argv[3]) and int(sys.argv[4]) > 0):
-            lvl = 0
-            crack_count = 0
-            password = Hash.convert_sha256(sys.argv[1])
-            min_length = int(sys.argv[2])
-            max_length = int(sys.argv[3])
-            time_limit = int(sys.argv[4])
-            combin_values = [] #Combination array of the characters array in BruteForce.PRIMORDIAL 
-            refl = [ j for j in range(0,len(BruteForce.PRIMORDIAL))]
-            for i in range(0,len(BruteForce.PRIMORDIAL)):
-                combin_values.append([])
-                for j in range(0,len(BruteForce.PRIMORDIAL)):
-                    combin_values[i].append([])
-            for i in range(0,len(BruteForce.PRIMORDIAL)):
-                combin_values[0][i].append([refl[i]])
-            
-            #Fill the combination array with every combination possible (except between the same characters array)
-            z = 1
-            for i in range(1,len(combin_values)):
-                for j in range(z,len(combin_values[0])):
-                
-                    for m in range(0,j):
-                        if(len(combin_values[i-1][m]) != 0):
-                            for n in range(0, len(combin_values[i-1][m])):
-                                tmp = combin_values[i-1][m][n][:]
-                                tmp.append(refl[j])
-                                combin_values[i][j].append(tmp)
-                z += 1
+    if(len(sys.argv) == 4):
+        if(str.isdecimal(sys.argv[3])):
+            if(str(sys.argv[1]) == "simple"):
+                if(int(sys.argv[3]) > 0):
+                    BruteForce.simple(Hash.convert_sha256(str(sys.argv[2])),Load.get_Characters(),int(sys.argv[3]), len(str(sys.argv[2])))
+                else:
+                    print("ERROR: TIME LIMIT MUST BE SUPERIOR TO 0")
 
-            #Go through the all the combination possible and use them to try to crack the password
-            for i in range(0, len(combin_values)):
-                for j in range(0,len(combin_values[0])):
-                    if(len(combin_values[i][j]) != 0):
-                        
-                        for k in range(0,len(combin_values[i][j])):
-                            alphabet = np.array([])
-                            for l in range(0,len(combin_values[i][j][k])):
-                                alphabet = np.concatenate([alphabet, BruteForce.PRIMORDIAL[combin_values[i][j][k][l]]])
-                            print("Estimated maximum time: "+str(BruteForce.speed(min_length, max_length, alphabet))+" seconds")
-                            lvl += BruteForce.brute_force(password, min_length, max_length, alphabet, time_limit)
-                            crack_count += 1
+            elif(str(sys.argv[1]) == "fast"):
+                if(int(sys.argv[3]) > 0):
+                    BruteForce.fast(Hash.convert_sha256(str(sys.argv[2])),Load.get_Characters(),int(sys.argv[3]), len(str(sys.argv[2])))
+                else:
+                    print("ERROR: TIME LIMIT MUST BE SUPERIOR TO 0")
 
-            if(lvl < 0):
-                print("The strength level of the password against brute-force "+str(sys.argv[1])+" (with min_length = "+str(min_length)+", max_length = "+str(max_length)+" and time_limit = "+str(time_limit)+") seconds) is LVL = 0/"+str(crack_count))
+            elif(str(sys.argv[1]) == "word"):
+                if(int(sys.argv[3]) > 0):
+                    Dictionnary.word(Hash.convert_sha256(str(sys.argv[2])), Load.load_Wordlist("./passwords.txt"), int(sys.argv[3]))
+                else: print("ERROR: TIME LIMIT MUST BE SUPERIOR TO 0")
             else:
-                print("The strength level of the password against brute-force "+str(sys.argv[1])+" (with min_length = "+str(min_length)+", max_length = "+str(max_length)+" and time_limit = "+str(time_limit)+" seconds) is LVL = "+str(lvl)+"/"+str(crack_count))
+                print("help: display the list of commands")
         else:
-            print("ERROR: WRONG ARGUMENTS")
-            print("Password_Strength_Tester password min_length max_length time_limit")
-            print("password : STRING\nmin_length: INTEGER\nmax_length : INTEGER\ntime_limit : INTERGER (seconds)")
-    except:
-        print("ERROR: WRONG ARGUMENTS")
-        print("Password_Strength_Tester password min_length max_length time_limit")
-        print("password : STRING\nmin_length: INTEGER\nmax_length : INTEGER\ntime_limit : INTERGER (seconds)")
+            print("ERROR: TIME LIMIT MUST BE AN INTEGER")
+    elif(len(sys.argv) == 2):
+        if(str(sys.argv[1]) == "help"):
+            print("Functions:\n\nsimple password time_limit : Crack the password with brute-force attacks")
+            print("fast password time_limit : Crack the password with brute-force attacks as fast as possible")
+            print("word password time_limit : Crack the password with dictionnary attacks\n")
+            print("\nArguments:\n\npassword: the plain password to test(STRING)\ntime_limit: the time limit to crack the password(INT > 0)")
+        else:
+            print("help: display the list of commands")
+    else:
+        print("help: display the list of commands")
+        
