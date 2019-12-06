@@ -9,8 +9,12 @@ TETA = np.array(["{","}","(",")","[","]","#","~","&","\"","\'","-","|","`","_","
 PRIMORDIAL = np.array([ALPHA, BETA, DELTA, TETA])
 
 def load_Wordlist(path):
-    words = open(path, 'r')
-    wordlist = words.readlines()
+    wordlist = np.array([])
+    list_dir = os.listdir(path)
+    for i in list_dir:
+        words = open(path+i, "r")
+        wordlist = np.concatenate([wordlist, words.readlines()])
+        words.close()
     for i in range(0,len(wordlist)):
         if(i < len(wordlist)-1 ):
             wordlist[i] = wordlist[i][:len(wordlist[i])-1]

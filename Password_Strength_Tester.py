@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
             elif(str(sys.argv[1]) == "word"):
                 if(int(sys.argv[3]) > 0):
-                    Dictionnary.word(Hash.convert_sha256(str(sys.argv[2])), Load.load_Wordlist("./passwords.txt"), int(sys.argv[3]))
+                    Dictionnary.word(Hash.convert_sha256(str(sys.argv[2])), Load.load_Wordlist("./passwords/"), int(sys.argv[3]))
                 else: print("ERROR: TIME LIMIT MUST BE SUPERIOR TO 0")
             else:
                 print("help: display the list of commands")

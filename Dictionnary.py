@@ -18,8 +18,8 @@ def word(password, wordlist, TIME_LIMIT):
             over_time = True
             break
     if(has_found == True):
-        print("PASSWORD FOUND in "+str(count)+" trials ("+str(time.clock()-TIME_LIMIT)+" seconds)\n")
+        print("PASSWORD FOUND in "+str(count)+" trials ("+str(time.clock()-start_time)+" seconds)\n")
     elif(over_time == True):
         print("PASSWORD NOT FOUND within The time limit of "+str(TIME_LIMIT)+" seconds after "+str(count)+" trials\n" )
     else:
-        print("PASSWORD NOT FOUND in "+str(count)+" trials ("+str(time.clock()-TIME_LIMIT)+" seconds)\n")
+        print("PASSWORD NOT FOUND in "+str(count)+" trials ("+str(time.clock()-start_time)+" seconds)\n")
