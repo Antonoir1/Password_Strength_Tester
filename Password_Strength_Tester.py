@@ -33,6 +33,11 @@ if __name__ == "__main__":
             print("\nArguments:\n\npassword: the plain password to test(STRING)\ntime_limit: the time limit to crack the password(INT > 0)")
         else:
             print("help: display the list of commands")
+    elif(len(sys.argv) == 3):
+        if(str(sys.argv[1]) == "check"):
+            BruteForce.Check(str(sys.argv[2]), Load.get_Characters())
+        else:
+            print("help: display the list of commands")
     else:
         print("help: display the list of commands")
         

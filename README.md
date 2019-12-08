@@ -12,6 +12,12 @@ The goal of this project was to make a tool to test the strength of a password h
 <li>hashlib (https://pypi.org/project/hashlib/)</li>
 </ul>
 
+## Before you start
+You can use this command to know how much time it would take for your computer to crack a given password:
+```bash
+$ python Password_Strength_Tester.py check password
+```
+
 ## Run
 
 To run this project enter this command:
