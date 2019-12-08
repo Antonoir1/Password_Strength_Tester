@@ -96,7 +96,7 @@ def fast(password, alphabet, TIME_LIMIT, max_length):
                     alphabet_tmp = np.array([])
                     for l in range(0,len(combin_values[i][j][k])):
                         alphabet_tmp = np.concatenate([alphabet_tmp, alphabet[combin_values[i][j][k][l]]])
-                    found = brute_force(password, min_length, max_length, alphabet_tmp, time_limit)
+                    found = brute_force(password, max_length, max_length, alphabet_tmp, time_limit)
                     crack_count += 1
                     has_found = found[0]
                     if(has_found == True):
@@ -119,7 +119,7 @@ def simple(password, aplhabet, TIME_LIMIT, max_length):
     for i in range(0,len(aplhabet)):
         alphabet_tmp = np.concatenate([alphabet_tmp, aplhabet[i]])
 
-    has_found = brute_force(password, min_length, max_length, alphabet_tmp, TIME_LIMIT)
+    has_found = brute_force(password, max_length, max_length, alphabet_tmp, TIME_LIMIT)
     if(has_found[0] == True):
         print("The password was cracked in "+str(has_found[1])+" seconds")
     else:
