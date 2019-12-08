@@ -27,8 +27,8 @@ $ python Password_Strength_Tester.py Mode Parameter1 Parameter2
 ### Modes:
 
 <ul>
-<li>simple : In this mode the project will simulate an incremental Brute-Force attack on the password hash.</li>
-<li>fast : In this mode the project will simulate a Brute-Force attack with different arrays of characters (Upper letters, Lower letters, Numbers and Special characters). This type of attack is very effective against password which have 1 or 2 type of character(Upper letters, Lower letters, Numbers and Special characters).</li>
+<li>simple : In this mode the project will simulate an incremental Brute-Force attack on the password hash (effective against long and complex passwords).</li>
+<li>fast : In this mode the project will simulate a Brute-Force attack with different arrays of characters (Upper letters, Lower letters, Numbers and Special characters). This type of attack is very effective against passwords which have 1 or 2 type of character(Upper letters, Lower letters, Numbers and Special characters) and small passwords (less than 5 characters).</li>
 <li>word : In this mode the project will simulate Dictionary attack on the password hash by using the passwords in the /passwords folder.</li>
 </ul>
 
