@@ -1,7 +1,7 @@
-# Password Strength Tester (Brute-force/Dictionnary attacks simulation)
+# Password Strength Tester (Brute-force/Dictionary attacks simulation)
 
 ## Description:
-The goal of this project was to make a tool to test the strength of a password hash against password cracking attacks such as Brute-force, Dictionnary or Rainbow table attack. Warning: The longer your password will be, the longer it will take time to crack it (only in simple and fast mode).
+The goal of this project was to make a tool to test the strength of a password hash against password cracking attacks such as Brute-force, Dictionary or Rainbow table attack. Warning: The longer your password will be, the longer it will take time to crack it (only in simple and fast mode).
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ $ python Password_Strength_Tester.py Mode Parameter1 Parameter2
 <ul>
 <li>simple : In this mode the project will simulate an incremental Brute-Force attack on the password hash.</li>
 <li>fast : In this mode the project will simulate a Brute-Force attack with different arrays of characters (Upper letters, Lower letters, Numbers and Special characters). This type of attack is very effective against password which have 1 or 2 type of character(Upper letters, Lower letters, Numbers and Special characters).</li>
-<li>word : In this mode the project will simulate Dictionnary attack on the password hash by using the passwords in the /passwords folder.</li>
+<li>word : In this mode the project will simulate Dictionary attack on the password hash by using the passwords in the /passwords folder.</li>
 </ul>
 
 ### Parameters:
