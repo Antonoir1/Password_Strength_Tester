@@ -12,13 +12,14 @@ def load_Wordlist(path):
     wordlist = np.array([])
     list_dir = os.listdir(path)
     for i in list_dir:
-        words = open(path+i, "r")
-        wordlist = np.concatenate([wordlist, words.readlines()])
-        words.close()
+        if(".txt" in i):
+            words = open(path+i, "r")
+            wordlist = np.concatenate([wordlist, words.readlines()])
+            words.close()
     for i in range(0,len(wordlist)):
         if(i < len(wordlist)-1 ):
             wordlist[i] = wordlist[i][:len(wordlist[i])-1]
-    return wordlist
+    return np.unique(wordlist)
 
 def get_Characters():
     return PRIMORDIAL

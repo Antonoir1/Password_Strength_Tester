@@ -3,6 +3,12 @@ import numpy as np
 import math
 import Hash
 
+def Check_isfinished(tab,limit):
+    for i in tab:
+        if i != limit:
+            return False
+    return True
+
 #Tries to find a password with it Hash(min/max: minimum/maximum size of the password, alphabet: characters used to guess the password, TIME_LIMIT: in seconds)
 def brute_force(password, min, max, aplhabet, TIME_LIMIT):
     print("Cracking...")
@@ -18,13 +24,13 @@ def brute_force(password, min, max, aplhabet, TIME_LIMIT):
             has_found = True
             break
         
-        while(values[0] != len(aplhabet) and time.clock()-start_time < TIME_LIMIT):
+        while(Check_isfinished(values,len(aplhabet)) == False  and time.clock()-start_time < TIME_LIMIT):
             if(values[-1] == len(aplhabet)):
                 tmp_index = len(values)-1
                 while(values[tmp_index-1] == len(aplhabet) and tmp_index > 1):
                     tmp_index -= 1
                 #Check if every character combination was guessed 
-                if(values[0] != len(aplhabet)-1):
+                if(Check_isfinished(values,len(aplhabet)) == False):
                     values[tmp_index:len(values)] = 1
                     plain[tmp_index:len(values)] = [aplhabet[0] for i in range(tmp_index,len(values))]
 
@@ -201,7 +207,7 @@ def Check(password, alphabet):
         if(has_characters[i] == True):
             values.append(i)
     
-    fast_trials = 1
+    fast_trials = 0
     combin_values = [] #Combination array of the characters arrayS
     refl = [ j for j in range(0,len(alphabet))]
     for i in range(0,len(alphabet)):
@@ -234,10 +240,11 @@ def Check(password, alphabet):
                 for l in range(0,len(combin_values[i][j][k])):
                     alphabet_tmp = np.concatenate([alphabet_tmp, alphabet[combin_values[i][j][k][l]]])
                 if(has_found == False):
-                    fast_trials += math.pow(len(alphabet_tmp),len(password))
+                    fast_trials += pow(len(alphabet_tmp),len(password))
                 else:
+                    fast_trials += 1
                     for w in range(0,len(password)):
-                        fast_trials += (np.where(alphabet_tmp == password[i])[0][0])*(pow(len(alphabet_tmp),len(password)-1-w))
+                        fast_trials += (np.where(alphabet_tmp == password[w])[0][0])*(pow(len(alphabet_tmp),len(password)-1-w))
                     is_done = True
                     break
             if(is_done == True):
