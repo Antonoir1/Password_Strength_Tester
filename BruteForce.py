@@ -186,6 +186,33 @@ def getTime(aplhabet):
     end_time = time.clock()-start_time
     return end_time
 
+#Convert time duration to time date
+def display_time(seconds, granularity=5):
+    if(seconds < 1):
+        return str(seconds)+" second"
+    seconds_tmp = seconds
+    seconds = int(seconds)
+    intervals = (
+    ('years', 31536000),
+    ('days', 86400),
+    ('hours', 3600),
+    ('minutes', 60),
+    ('seconds', 1),
+    )
+    result = []
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            if("second" in name):
+                result.append("{} {}".format(value+seconds_tmp%1, name))
+            else:
+                result.append("{} {}".format(value, name))
+    return ', '.join(result[:granularity])
+
 #Check how much time it would take to crack a password
 def Check(password, alphabet):
     #Simple
@@ -253,5 +280,8 @@ def Check(password, alphabet):
             break
     print("Getting your computer computation speed...\n")
     time_simple = (getTime(full)/(math.pow(len(full),3)))
-    print("In simple mode cracking this password would take "+str(simple_trials)+" trials and take approximately "+str(simple_trials*time_simple)+" seconds")
-    print("In fast mode cracking this password would take "+str(fast_trials)+" trials and take approximately "+str(fast_trials*time_simple)+" seconds\n")
+    simple_t = simple_trials*time_simple
+    fast_t = fast_trials*time_simple
+    
+    print("In simple mode cracking this password would take "+str(simple_trials)+" trials and take approximately "+display_time(simple_t))
+    print("In fast mode cracking this password would take "+str(fast_trials)+" trials and take approximately "+display_time(fast_t))
