@@ -14,7 +14,7 @@ Execute the file **Password_Strength_Tester.exe**.
 
 ## Prerequisites (with python)
 <ul>
-<li>Windows 7/8/10</li>
+<li>Windows 7/8/10 or MacOs or Linux</li>
 <li>python 3.5-3.7</li>
 </ul>
 
