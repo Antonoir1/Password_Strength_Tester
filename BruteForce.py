@@ -1,126 +1,65 @@
-import time
+import time, math, os
+from multiprocessing import Pool, freeze_support
+import Speed
+
 import numpy as np
-import math
 import Hash
 
+#CHECK IF EACH VALUE HAS BEEN TRIED
 def Check_isfinished(tab,limit):
     for i in tab:
         if i != limit:
             return False
     return True
 
-#Tries to find a password with it Hash(min/max: minimum/maximum size of the password, alphabet: characters used to guess the password, TIME_LIMIT: in seconds)
-def brute_force(password, min, max, aplhabet, TIME_LIMIT):
-    print("Cracking...")
-    start_time = time.clock()
-    trials = 1
-    values = np.ones(min, dtype=int)
-    plain = [aplhabet[0] for a in range(0,min)]
+#PROCESS BRUTE-FORCE FOR ONE PASSWORD LENGTH
+def subWorker(password, aplhabet, plain, values, start_time, TIME_LIMIT):
     has_found = False
+    trials = 1
+    while(Check_isfinished(values,len(aplhabet)) == False  and time.perf_counter()-start_time < TIME_LIMIT):
+        if(values[-1] == len(aplhabet)):
+            tmp_index = len(values)-1
+            while(values[tmp_index-1] == len(aplhabet) and tmp_index > 1):
+                tmp_index -= 1
+            #Check if every character combination was guessed 
+            if(Check_isfinished(values,len(aplhabet)) == False):
+                values[tmp_index:len(values)] = 1
+                plain[tmp_index:len(values)] = [aplhabet[0] for i in range(tmp_index,len(values))]
 
-    #Loop for each password length
-    for i in range(min-1,max):
-        if(Hash.convert_sha256("".join(plain)) == password):
-            has_found = True
-            break
-        
-        while(Check_isfinished(values,len(aplhabet)) == False  and time.clock()-start_time < TIME_LIMIT):
-            if(values[-1] == len(aplhabet)):
-                tmp_index = len(values)-1
-                while(values[tmp_index-1] == len(aplhabet) and tmp_index > 1):
-                    tmp_index -= 1
-                #Check if every character combination was guessed 
-                if(Check_isfinished(values,len(aplhabet)) == False):
-                    values[tmp_index:len(values)] = 1
-                    plain[tmp_index:len(values)] = [aplhabet[0] for i in range(tmp_index,len(values))]
-
-                values[tmp_index-1] += 1
-                plain[tmp_index-1] = aplhabet[values[tmp_index-1]-1]
-                trials += 1
-                if(Hash.convert_sha256("".join(plain)) == password):
-                    has_found = True
-                    break
-            else:
-                values[-1] += 1
-                plain[-1] = aplhabet[values[-1]-1]
-                trials += 1
-                if(Hash.convert_sha256("".join(plain)) == password):
-                    has_found = True
-                    break
-        if(has_found == True or time.clock()-start_time >= TIME_LIMIT):
-            break
-        values = np.ones(len(values)+1, dtype=int)
-        plain = []
-        for k in range(0,len(values)):
-            plain.append(aplhabet[0])
-
-    end_time = time.clock()-start_time
+            values[tmp_index-1] += 1
+            plain[tmp_index-1] = aplhabet[values[tmp_index-1]-1]
+            trials += 1
+            if(Hash.convert_sha256("".join(plain)) == password):
+                has_found = True
+                break
+        else:
+            values[-1] += 1
+            plain[-1] = aplhabet[values[-1]-1]
+            trials += 1
+            if(Hash.convert_sha256("".join(plain)) == password):
+                has_found = True
+                break
+    end_time = time.perf_counter()-start_time
     if(has_found == True):
-        print("PASSWORD FOUND in "+str(trials)+" trials ("+str(end_time)+" seconds)\n" )
         return [True, end_time, trials]
-    elif(time.clock()-start_time >= TIME_LIMIT):
-        print("PASSWORD NOT FOUND within The time limit of "+str(TIME_LIMIT)+" seconds after "+str(trials)+" trials\n" )
-        return [False, TIME_LIMIT, trials]
     else:
-        print("PASSWORD NOT FOUND in "+str(trials)+" trials ("+str(end_time)+" seconds)\n")
         return [False, end_time, trials]
 
-#Fast mode
-def fast(password, alphabet, TIME_LIMIT, max_length):
-    has_found = False
-    alpha_found = []
-    found = []
-    crack_count = 0
+
+#USE BRUTE-FORCE ATTACKS FOR EACH PASSWORD LENGTH
+def brute_force(password, min, max, aplhabet, TIME_LIMIT):
+    start_time = time.perf_counter()
     trials = 0
-    time_used = 0
-    time_limit = int(TIME_LIMIT)
-    combin_values = [] #Combination array of the characters arrayS 
-    refl = [ j for j in range(0,len(alphabet))]
-    for i in range(0,len(alphabet)):
-        combin_values.append([])
-        for j in range(0,len(alphabet)):
-            combin_values[i].append([])
-    for i in range(0,len(alphabet)):
-        combin_values[0][i].append([refl[i]])
 
-    #Fill the combination array with every combination possible (except between the same characters array)
-    z = 1
-    for i in range(1,len(combin_values)):
-        for j in range(z,len(combin_values[0])):
-            for m in range(0,j):
-                if(len(combin_values[i-1][m]) != 0):
-                    for n in range(0, len(combin_values[i-1][m])):
-                        tmp = combin_values[i-1][m][n][:]
-                        tmp.append(refl[j])
-                        combin_values[i][j].append(tmp)
-        z += 1
+    for i in range(min-1, max):
+        outputs = subWorker(password,aplhabet, [aplhabet[0] for a in range(0,i+1)], np.ones(i+1, dtype=int),  start_time, TIME_LIMIT)
+        trials += outputs[2]
+        if(outputs[0] == True):
+            return [True, time.perf_counter()-start_time, trials]
+        if(time.perf_counter()-start_time > TIME_LIMIT):
+            return [False, TIME_LIMIT, trials]
 
-    #Go through the all the combination possible and use them to try to crack the password as fast as possible
-    for i in range(0, len(combin_values)):
-        for j in range(0,len(combin_values[0])):
-            if(len(combin_values[i][j]) != 0):
-                for k in range(0,len(combin_values[i][j])):
-                    alphabet_tmp = np.array([])
-                    for l in range(0,len(combin_values[i][j][k])):
-                        alphabet_tmp = np.concatenate([alphabet_tmp, alphabet[combin_values[i][j][k][l]]])
-                    found = brute_force(password, max_length, max_length, alphabet_tmp, time_limit)
-                    time_used += found[1]
-                    trials += found[2]
-                    crack_count += 1
-                    has_found = found[0]
-                    if(has_found == True):
-                        alpha_found = alphabet_tmp
-                        break
-                if(has_found == True):
-                    break
-        if(has_found == True):
-            break
-    if(has_found == True):
-        print("The password was cracked in "+str(trials)+" trials ("+str(time_used)+" seconds)\n")
-    else:
-        print("The password wasn't cracked within The time limit of "+str(TIME_LIMIT)+" seconds after "+str(trials)+" trials\n")
-
-#Simple mode
+#CALL THE BRUTE-FORCE ATTACKS AND CHECK IT RESULT
 def simple(password, aplhabet, TIME_LIMIT, max_length):
     has_found = []
 
@@ -128,160 +67,21 @@ def simple(password, aplhabet, TIME_LIMIT, max_length):
     for i in range(0,len(aplhabet)):
         alphabet_tmp = np.concatenate([alphabet_tmp, aplhabet[i]])
 
-    has_found = brute_force(password, max_length, max_length, alphabet_tmp, TIME_LIMIT)
+    has_found = brute_force(password, 1, max_length, alphabet_tmp, TIME_LIMIT)
     if(has_found[0] == True):
-        print("The password was cracked in "+str(has_found[2])+" trials ("+str(has_found[1])+" seconds)\n")
+        return "PASSWORD FOUND in "+str(has_found[2])+" trials ("+Speed.display_time(has_found[1])+")"
     else:
-        print("The password wasn't cracked within The time limit of "+str(TIME_LIMIT)+" seconds after "+str(has_found[2])+" trials\n")
+        return "PASSWORD NOT FOUND within The time limit of "+str(TIME_LIMIT)+" seconds after "+str(has_found[2])+" trials"
 
 
-#Get the computation time for len(alphabet)^3
+#RETURN THE TIME TAKEN TO TRY EACH HASH
 def getTime(aplhabet):
-    password = "0"
-    min = 3
-    max = 3
     TIME_LIMIT = 1000
-    start_time = time.clock()
-    trials = 1
-    values = np.ones(min, dtype=int)
-    plain = [aplhabet[0] for a in range(0,min)]
-    has_found = False
+    start_time = time.perf_counter()
+    values = np.ones(3, dtype=int)
+    plain = [aplhabet[0] for a in range(0,3)]
 
-    #Loop for each password length
-    for i in range(min-1,max):
-        if(Hash.convert_sha256("".join(plain)) == password):
-            has_found = True
-            break
-        
-        while(values[0] != len(aplhabet) and time.clock()-start_time < TIME_LIMIT):
-            if(values[-1] == len(aplhabet)):
-                tmp_index = len(values)-1
-                while(values[tmp_index-1] == len(aplhabet) and tmp_index > 1):
-                    tmp_index -= 1
-                #Check if every character combination was guessed 
-                if(values[0] != len(aplhabet)-1):
-                    values[tmp_index:len(values)] = 1
-                    plain[tmp_index:len(values)] = [aplhabet[0] for i in range(tmp_index,len(values))]
-
-                values[tmp_index-1] += 1
-                plain[tmp_index-1] = aplhabet[values[tmp_index-1]-1]
-                trials += 1
-                if(Hash.convert_sha256("".join(plain)) == password):
-                    has_found = True
-                    break
-            else:
-                values[-1] += 1
-                plain[-1] = aplhabet[values[-1]-1]
-                trials += 1
-                if(Hash.convert_sha256("".join(plain)) == password):
-                    has_found = True
-                    break
-        if(has_found == True or time.clock()-start_time >= TIME_LIMIT):
-            break
-        values = np.ones(len(values)+1, dtype=int)
-        plain = []
-        for k in range(0,len(values)):
-            plain.append(aplhabet[0])
-
-    end_time = time.clock()-start_time
+    subWorker("", aplhabet, plain, values, start_time, TIME_LIMIT)
+    end_time = time.perf_counter()-start_time
     return end_time
 
-#Convert time duration to time date
-def display_time(seconds, granularity=5):
-    if(seconds < 1):
-        return str(seconds)+" second"
-    seconds_tmp = seconds
-    seconds = int(seconds)
-    intervals = (
-    ('years', 31536000),
-    ('days', 86400),
-    ('hours', 3600),
-    ('minutes', 60),
-    ('seconds', 1),
-    )
-    result = []
-
-    for name, count in intervals:
-        value = seconds // count
-        if value:
-            seconds -= value * count
-            if value == 1:
-                name = name.rstrip('s')
-            if("second" in name):
-                result.append("{} {}".format(value+seconds_tmp%1, name))
-            else:
-                result.append("{} {}".format(value, name))
-    return ', '.join(result[:granularity])
-
-#Check how much time it would take to crack a password
-def Check(password, alphabet):
-    #Simple
-    full = np.array([])
-    for i in range(0,len(alphabet)):
-        full = np.concatenate([full, alphabet[i]])
-    simple_trials = 1
-    for i in range(0,len(password)):
-        simple_trials += (np.where(full == password[i])[0][0])*(pow(len(full),len(password)-1-i))
-
-    #Fast
-    has_characters = [False for i in range(0,len(alphabet))]
-    for i in range(0,len(alphabet)):
-        for j in range(0,len(password)):
-            if(password[j] in alphabet[i]):
-                has_characters[i] = True
-    values = []
-    for i in range(0,len(has_characters)):
-        if(has_characters[i] == True):
-            values.append(i)
-    
-    fast_trials = 0
-    combin_values = [] #Combination array of the characters arrayS
-    refl = [ j for j in range(0,len(alphabet))]
-    for i in range(0,len(alphabet)):
-        combin_values.append([])
-        for j in range(0,len(alphabet)):
-            combin_values[i].append([])
-    for i in range(0,len(alphabet)):
-        combin_values[0][i].append([refl[i]])
-    #Fill the combination array with every combination possible (except between the same characters array)
-    z = 1
-    for i in range(1,len(combin_values)):
-        for j in range(z,len(combin_values[0])):
-            for m in range(0,j):
-                if(len(combin_values[i-1][m]) != 0):
-                    for n in range(0, len(combin_values[i-1][m])):
-                        tmp = combin_values[i-1][m][n][:]
-                        tmp.append(refl[j])
-                        combin_values[i][j].append(tmp)
-        z += 1
-    #Go through each combination and get the number of trials
-    is_done = False
-    for i in range(0,len(combin_values)):
-        for j in range(0,len(combin_values[i])):
-            for k in range(0,len(combin_values[i][j])):
-                has_found = True
-                for z in range(0,len(values)):
-                    if(values[z] not in combin_values[i][j][k]):
-                        has_found = False
-                alphabet_tmp = np.array([])
-                for l in range(0,len(combin_values[i][j][k])):
-                    alphabet_tmp = np.concatenate([alphabet_tmp, alphabet[combin_values[i][j][k][l]]])
-                if(has_found == False):
-                    fast_trials += pow(len(alphabet_tmp),len(password))
-                else:
-                    fast_trials += 1
-                    for w in range(0,len(password)):
-                        fast_trials += (np.where(alphabet_tmp == password[w])[0][0])*(pow(len(alphabet_tmp),len(password)-1-w))
-                    is_done = True
-                    break
-            if(is_done == True):
-                break
-        if(is_done == True):
-            break
-    print("Getting your computer computation speed...\n")
-    time_simple = (getTime(full)/(math.pow(len(full),3)))
-    simple_t = simple_trials*time_simple
-    fast_t = fast_trials*time_simple
-    
-    print("In simple mode cracking this password would take "+str(simple_trials)+" trials and take approximately "+display_time(simple_t))
-    print("In fast mode cracking this password would take "+str(fast_trials)+" trials and take approximately "+display_time(fast_t))

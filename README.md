@@ -1,42 +1,45 @@
-# Password Strength Tester (Brute-force/Dictionary attacks simulation)
+# Password Strength Tester (Brute-force/Dictionary attacks)
 
 ## Description:
-The goal of this project was to make a tool to test the strength of a password hash against password cracking attacks such as Brute-force, Dictionary or Rainbow table attack. Warning: The longer your password will be, the longer it will take time to crack it (only in simple and fast mode).
+The goal of this project was to make a tool to test the strength of a password hash against password cracking attacks such as Brute-force, Dictionary attacks. Warning: The longer your password will be, the longer it will take time to crack it (only in Brute-force mode).
 
 ## Prerequisites
 
 <ul>
-<li>Windows 7/8/10 or Linux</li>
-<li>python 3 (https://www.python.org/)</li>
-<li>numpy (https://pypi.org/project/numpy/)</li>
-<li>hashlib (https://pypi.org/project/hashlib/)</li>
+<li>Windows 7/8/10</li>
 </ul>
-
-## Before you start
-You can use this command to know how much time it would take for your computer to crack a given password:
-```bash
-$ python Password_Strength_Tester.py check password
-```
 
 ## Run
+Execute the file **Password_Strength_Tester.exe**.
 
-To run this project enter this command:
+## Prerequisites (with python)
+<ul>
+<li>Windows 7/8/10</li>
+<li>python 3.5-3.7</li>
+</ul>
+
+## Installation
+Enter the following command:
 ```bash
-$ python Password_Strength_Tester.py Mode Parameter1 Parameter2
-```
-### Modes:
+pip install requirements.txt
+``` 
 
-<ul>
-<li>simple : In this mode the project will simulate an incremental Brute-Force attack on the password hash (effective against long and complex passwords).</li>
-<li>fast : In this mode the project will simulate a Brute-Force attack with different arrays of characters (Upper letters, Lower letters, Numbers and Special characters). This type of attack is very effective against passwords which have 1 or 2 type of character(Upper letters, Lower letters, Numbers and Special characters) and small passwords (less than 5 characters).</li>
-<li>word : In this mode the project will simulate Dictionary attack on the password hash by using the passwords in the /passwords folder.</li>
-</ul>
+## Run
+Enter the following command:
+```bash
+python Password_Strength_Tester.py
+``` 
 
-### Parameters:
-<ul>
-<li>Parameter1 : The plain password you want to test against attacks (type: STRING)</li>
-<li>Parameter2 : The time limit you want to put on each attacks (type: INT > 0)</li>
-</ul>
+## Manual
+
+### Step 1: Inputs
+First enter your password into the password input field, then enter the limit of time you want to impose to crack the password. Finally choose the type of attack you want to test (Modes: Brute-force, Dictionary).
+
+### Step 2: Computation speed
+Click on the button **Get Computation speed** to know how much time it would take to crack your password in the different modes.
+
+### Step 3: Test against cracking attacks
+When you are done please click on the button **Crack** to start the attack.
 
 ## Optional
 If you want the word mode to be more effective, you can add txt files containing password to try in the /passwords folder. They must have the following format:
@@ -48,5 +51,4 @@ password4
     .
     .
     .
-```
-Even if 2 or more files contain the same password, or if there are copy of the same password in a file it will be added only once to array containg the passwords to be used. 
+``` 
